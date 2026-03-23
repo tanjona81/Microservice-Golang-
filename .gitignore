@@ -11,3 +11,4 @@
 
 # IDEs
 .vscode/
+/database.sql
