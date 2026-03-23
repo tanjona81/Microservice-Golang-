@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: go-api-monitor
+  namespace: monitoring # Usually deployed where Prometheus lives
+  labels:
+    # This label MUST match what your Helm chart is looking for
+    # Usually 'release: prometheus' if you used the standard Helm install
+    release: prometheus 
+spec:
+  namespaceSelector:
+    matchNames:
+      - go-redis-prod # Tell Prometheus to look in your app's namespace
+  selector:
+    matchLabels:
+      app: go-api-prometheus # This matches the label we just added to your Service
+  endpoints:
+  - port: metrics # This matches the 'name' we gave the port in the Service
+    path: /metrics
+    interval: 15s

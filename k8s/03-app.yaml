@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-api-deployment
+  namespace: go-redis-prod
+spec:
+  replicas: 2 # High availability
+  selector:
+    matchLabels:
+      app: go-api-deployment
+  template:
+    metadata:
+      labels:
+        app: go-api-deployment
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: alpine:latest
+          command: 
+            - /bin/sh
+            - -c
+            - |
+              apk add --no-cache netcat-openbsd
+              until nc -z mysql-internal 3306; do 
+                echo "Waiting for database..."
+                sleep 2
+              done
+      containers:
+      - name: go-api
+        image: localhost:5000/my-go-app:v1.0.3
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: api-config
+          - secretRef:
+              name: mysql-auth
+          - secretRef:
+              name: redis-auth
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: go-app-svc
+#   namespace: go-redis-prod
+# spec:
+#   type: NodePort # This allows you to access it from Windows/WSL
+#   ports:
+#   - port: 8080
+#     targetPort: 8080
+#     nodePort: 30080
+#   selector:
+#     app: go-api-deployment

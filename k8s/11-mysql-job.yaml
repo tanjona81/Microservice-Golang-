@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-provisioner
+  namespace: go-redis-prod
+spec:
+  template:
+    spec:
+      containers:
+      - name: provisioner
+        image: mysql:8.0
+        env:
+        - name: DB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-auth
+              key: DB_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: DB_NAME
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            mysql -h mysql-internal -u root -p${DB_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;"
+      restartPolicy: OnFailure

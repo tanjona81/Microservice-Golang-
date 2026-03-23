@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: go-redis-prod
+data:
+  # Set to 'development' for dev, 'production' for production
+  APP_ENV: "production"
+  # Set to 'debug' for dev, 'info' for production
+  LOG_LEVEL: "debug"
+
+  # Redis Configuration
+  REDIS_ADDR: "redis-internal:6379"
+
+  # Database Configuration
+  DB_HOST: "mysql-internal"
+  DB_PORT: "3306"
+  DB_NAME: "user"
+  DB_APP_PARAMS: "parseTime=true"
+  DB_MIGRATE_PARAMS: "parseTime=true&multiStatements=true"
+
+  # Security Settings
+  BCRYPT_COST: "12"
+  ACCESS_TOKEN_TTL: "15m"
+  REFRESH_TOKEN_TTL: "168h"
+
+  # Circuit Breaker Settings
+  DB_MAX_REQUESTS: "5"
+  DB_INTERVAL: "10s"
+  DB_TIMEOUT: "30"
+  DB_FAILURE_RATIO: "0.6"
+  DB_CONSECUTIVE_FAILURE: "5"
+
+  # Global Timeout Settings
+  TIMEOUT_AUTH: "3s"
+  TIMEOUT_STANDARD: "1s"
+  TIMEOUT_LONG: "5s"
+
+  # Brute force (rate limiter) settings
+  RATELIMITER_MAX_ATTEMPTS: "5" 
+  RATELIMITER_BANDURATION: "10m"
+
+  # Shadow limiter settings
+  SHADOWLIMITER_MAX_ATTEMPTS: "3"
+  SHADOWLIMITER_WINDOW: "1m"

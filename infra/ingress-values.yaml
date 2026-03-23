@@ -1,0 +1,21 @@
+controller:
+  # 1. Force it to the node with your KIND label
+  nodeSelector:
+    ingress-ready: "true"
+    kubernetes.io/os: linux
+
+  # 2. Give it the "Keycard" (Toleration) for the Control-Plane Taint
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  # 3. KIND-specific networking tweaks
+  service:
+    type: NodePort
+  hostPort:
+    enabled: true
+  terminationGracePeriodSeconds: 0

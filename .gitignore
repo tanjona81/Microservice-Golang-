@@ -1,0 +1,13 @@
+# Secrets and Credentials
+.env
+.env.local
+*.pem
+*.key
+**/k8s/*-secrets.yaml
+
+# Docker
+.docker/
+/docker-compose.yaml
+
+# IDEs
+.vscode/

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-internal
+  namespace: go-redis-prod
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: go-redis-prod
+spec:
+  serviceName: "redis-internal"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-auth
+              key: REDIS_PASSWORD
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
