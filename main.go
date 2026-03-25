@@ -145,7 +145,7 @@ func main() {
 	authService := services.NewAuthService(dbConn, dbBreaker, authRepo, userRepo, tokenRepo, tokenService, appConfg, redisdb)
 
 	// Handlers
-	userHdl := handlers.NewUserHandler(userService)
+	userHdl := handlers.NewUserHandler(appConfg, userService)
 	authHdl := handlers.NewAuthHandler(appConfg, authService, tokenService)
 
 	// Create the router
@@ -206,6 +206,7 @@ func main() {
 
 			r.Route("/{id}", func(r chi.Router) {
 				r.Use(middleware.UserIDCtx)
+				r.Get("/grpc/", userHdl.GetUserFromGRPC)     // A gRPC call
 				r.Use(middleware.EnsureRole("user"))         // Users see themselves
 				r.Get("/", userHdl.GetUsersByIDHandler)      // GET /users/10
 				r.Put("/", userHdl.PutUpdateUserHandler)     // PUT /users/10
