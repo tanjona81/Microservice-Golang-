@@ -217,7 +217,7 @@ func bindConfig(v *viper.Viper) {
 	}
 
 	for envVar, viperKey := range requiredKeys {
-		v.BindEnv(envVar, viperKey)
+		v.BindEnv(viperKey, envVar)
 	}
 }
 
