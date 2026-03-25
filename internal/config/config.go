@@ -216,15 +216,8 @@ func bindConfig(v *viper.Viper) {
 		"SHADOWLIMITER_WINDOW":       "ShadowLimiter.Window",
 	}
 
-	for envVar, viperKey := range requiredKeys {
+	for envVar, _ := range requiredKeys {
 		v.SetDefault(envVar, "")
-		if err := v.BindEnv(viperKey, envVar); err != nil {
-			fmt.Printf("BindEnv error: %s", envVar)
-		}
-
-		if !v.IsSet(viperKey) {
-			fmt.Printf("missing required env: %s", envVar)
-		}
 	}
 }
 
