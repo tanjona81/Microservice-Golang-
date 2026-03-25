@@ -15,7 +15,7 @@ spec:
     spec:
       initContainers:
         - name: wait-for-db
-          image: alpine:latest
+          image: localhost:5000/my-go-app:b183064 
           command: 
             - /bin/sh
             - -c
@@ -27,7 +27,7 @@ spec:
               done
       containers:
       - name: go-api
-        image: localhost:5000/my-go-app:v1.0.3
+        image: localhost:5000/my-go-app:b183064 
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:

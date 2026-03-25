@@ -15,7 +15,7 @@ fi
 # Create the Kind cluster with the config
 if ! kind get clusters | grep -q "^${CLUSTER_NAME}$"; then
   echo "Creating Kind cluster..."
-  kind create cluster --name "${CLUSTER_NAME}" --config kind-config.yaml
+  kind create cluster --name "${CLUSTER_NAME}" --config infra/kind-config.yaml
 else
   echo "Cluster '${CLUSTER_NAME}' already exists."
 fi

@@ -6,7 +6,7 @@ NAMESPACE=ingress-nginx
 VALUES=infra/ingress-values.yaml
 CHART=ingress-nginx/ingress-nginx
 
-.PHONY: build push deploy clean ingress-init ingress-install ingress-status
+.PHONY: build push monitoring deployall clean ingress-init ingress-install ingress-status
 
 # Used for deploying modification
 dev: build push deploy
@@ -27,6 +27,13 @@ push:
 	docker push $(FULL_IMAGE)
 
 # Update the deployment and apply
+deployall: build push
+	@echo "Updating manifest with tag $(TAG)..."
+	# This sed command finds the 'image:' line and replaces it with our new tag
+	sed -i 's|image: .*|image: $(FULL_IMAGE)|' k8s/03-app.yaml
+	@echo "Applying manifest..."
+	kubectl apply -f k8s/
+
 deploy: build push
 	@echo "Updating manifest with tag $(TAG)..."
 	# This sed command finds the 'image:' line and replaces it with our new tag
@@ -59,3 +66,15 @@ ingress-install:
 ingress-status:
 	kubectl get pods -n $(NAMESPACE) -o wide
 	kubectl get ingress -A
+
+monitoring:
+	@echo "Installing Prometheus..."
+	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	helm repo update
+	@echo "Applying prometheus namespace..."
+	kubectl apply -f k8s/12-prometheus-namespace.yaml
+	@echo "Install the full stack (Prometheus, Grafana, Alertmanager, Node Exporter)..."
+	helm install prometheus prometheus-community/kube-prometheus-stack \
+		--namespace monitoring \
+		--set grafana.adminPassword=admin"
+	@echo "Monitoring setup finished successfully"
