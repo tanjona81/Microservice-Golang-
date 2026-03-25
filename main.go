@@ -41,6 +41,7 @@ func main() {
 
 	slog.Debug("Logger initialized", "env_value", appConfg.AppEnv)
 	slog.Debug("Database name check", "env_value DB_NAME", appConfg.Database.Name)
+	slog.Debug("DIRECT OS CHECK", "val", os.Getenv("GRPC_ADDR"))
 	slog.Debug("JUST HERE")
 
 	// Seting up utilities

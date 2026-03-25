@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 
 	userv1 "github.com/tanjona81/gRPC-Golang-/gen/go"
@@ -210,6 +211,7 @@ func (handle *UserHandler) GetUserFromGRPC(w http.ResponseWriter, r *http.Reques
 	slog.Debug("Check for mysql env variable", "Value", handle.appConfig.Database.DSN)
 	slog.Debug("Check for redis env variable", "Value", handle.appConfig.Redis.RedisAddr)
 	slog.Debug("Check for level env variable", "Value", handle.appConfig.AppEnv)
+	slog.Debug("DIRECT OS CHECK", "val", os.Getenv("GRPC_ADDR"))
 	userClient, conn, err := client.NewUserClient(handle.appConfig.GrpcAddr)
 	defer conn.Close()
 
