@@ -205,13 +205,12 @@ func main() {
 		})
 
 		// ID REQUIRED
-		r.Route("/", func(r chi.Router) {
+		r.Route("/{id}", func(r chi.Router) {
 			// Runs for everything in this block
 			r.Use(middleware.Auth)
+			r.Use(middleware.UserIDCtx)
 
-			r.Route("/{id}", func(r chi.Router) {
-				r.Use(middleware.UserIDCtx)
-				r.Get("/grpc/", userHdl.GetUserFromGRPC)     // A gRPC call
+			r.Group(func(r chi.Router) {
 				r.Use(middleware.EnsureRole("user"))         // Users see themselves
 				r.Get("/", userHdl.GetUsersByIDHandler)      // GET /users/10
 				r.Put("/", userHdl.PutUpdateUserHandler)     // PUT /users/10
