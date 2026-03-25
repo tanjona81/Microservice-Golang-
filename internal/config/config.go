@@ -32,7 +32,7 @@ type Config struct {
 	AppEnv        Env                  `mapstructure:"APP_ENV"`
 	LogLevel      string               `mapstructure:"LOG_LEVEL"`
 	JwtSecretKey  string               `mapstructure:"JWT_SECRET_KEY"`
-	Grpc          string               `mapstructure:"GRPC_ADDR"`
+	GrpcAddr      string               `mapstructure:"GRPC_ADDR"`
 	Database      DatabaseConfig       `mapstructure:",squash"` // squash flattens the fields
 	Redis         RedisConfig          `mapstructure:",squash"`
 	Security      SecurityConfig       `mapstructure:",squash"`
@@ -188,7 +188,7 @@ func bindConfig(v *viper.Viper) {
 	requiredKeys := map[string]string{
 		"APP_ENV":                    "AppEnv",
 		"LOG_LEVEL":                  "LogLevel",
-		"GRPC_ADDR":                  "Grpc",
+		"GRPC_ADDR":                  "GrpcAddr",
 		"DB_USER":                    "Database.User",
 		"DB_PASSWORD":                "Database.Password",
 		"DB_HOST":                    "Database.Host",

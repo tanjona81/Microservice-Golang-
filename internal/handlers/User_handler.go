@@ -206,11 +206,11 @@ func (handle *UserHandler) GetUserFromGRPC(w http.ResponseWriter, r *http.Reques
 
 	// Setup the "Phone"
 	// userClient, conn, err := client.NewUserClient("grpc-user-service.go-grpc:50051")
-	slog.Debug("Check for grpc env variable", "Value", handle.appConfig.Grpc)
+	slog.Debug("Check for grpc env variable", "Value", handle.appConfig.GrpcAddr)
 	slog.Debug("Check for mysql env variable", "Value", handle.appConfig.Database.DSN)
 	slog.Debug("Check for redis env variable", "Value", handle.appConfig.Redis.RedisAddr)
 	slog.Debug("Check for level env variable", "Value", handle.appConfig.AppEnv)
-	userClient, conn, err := client.NewUserClient(handle.appConfig.Grpc)
+	userClient, conn, err := client.NewUserClient(handle.appConfig.GrpcAddr)
 	defer conn.Close()
 
 	// Error handling
