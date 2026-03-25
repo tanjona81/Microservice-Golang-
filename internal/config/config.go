@@ -217,7 +217,13 @@ func bindConfig(v *viper.Viper) {
 	}
 
 	for envVar, viperKey := range requiredKeys {
-		v.BindEnv(viperKey, envVar)
+		if err := v.BindEnv(viperKey, envVar); err != nil {
+			fmt.Printf("BindEnv error: %s", envVar)
+		}
+
+		if !v.IsSet(viperKey) {
+			fmt.Printf("missing required env: %s", envVar)
+		}
 	}
 }
 
