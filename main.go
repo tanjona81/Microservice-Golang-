@@ -199,6 +199,11 @@ func main() {
 		r.Get("/offset", userHdl.GetUsersOffsetHandler)
 		r.Post("/", userHdl.CreateUserHandler)
 
+		r.Route("/grpc/{id}", func(r chi.Router) {
+			r.Use(middleware.UserIDCtx)
+			r.Get("/", userHdl.GetUserFromGRPC) // A gRPC call
+		})
+
 		// ID REQUIRED
 		r.Route("/", func(r chi.Router) {
 			// Runs for everything in this block

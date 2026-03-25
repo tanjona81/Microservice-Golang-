@@ -40,6 +40,7 @@ deploy: build push
 	sed -i 's|image: .*|image: $(FULL_IMAGE)|' k8s/03-app.yaml
 	@echo "Applying deployment..."
 	kubectl apply -f k8s/03-app.yaml
+	kubectl rollout restart deployment go-api-deployment -n go-redis-prod
 
 # Clean up
 clean:
