@@ -206,6 +206,7 @@ func (handle *UserHandler) GetUserFromGRPC(w http.ResponseWriter, r *http.Reques
 
 	// Setup the "Phone"
 	// userClient, conn, err := client.NewUserClient("grpc-user-service.go-grpc:50051")
+	slog.Debug("Check for grpc env variable", "Value", handle.appConfig.Grpc)
 	userClient, conn, err := client.NewUserClient(handle.appConfig.Grpc)
 	defer conn.Close()
 
