@@ -217,7 +217,7 @@ func bindConfig(v *viper.Viper) {
 	}
 
 	for envVar, viperKey := range requiredKeys {
-		v.SetDefault(viperKey, "")
+		v.SetDefault(envVar, "")
 		if err := v.BindEnv(viperKey, envVar); err != nil {
 			fmt.Printf("BindEnv error: %s", envVar)
 		}
@@ -247,14 +247,14 @@ func LoadConfig() *Config {
 	// v.BindEnv("REDIS_ADDR")
 
 	// Set Defaults (Architect's Fail-safe)
-	v.SetDefault("APP_ENV", "development")
-	v.SetDefault("REDIS_ADDR", "development")
-	v.SetDefault("LOG_LEVEL", "info")
-	v.SetDefault("DB_HOST", "127.0.0.1")
-	v.SetDefault("DB_PORT", "3306")
-	v.SetDefault("RATELIMITER_MAX_ATTEMPTS", 5)
-	v.SetDefault("RATELIMITER_BANDURATION", "15m")
-	v.SetDefault("BCRYPT_COST", 12)
+	// v.SetDefault("APP_ENV", "development")
+	// v.SetDefault("REDIS_ADDR", "development")
+	// v.SetDefault("LOG_LEVEL", "info")
+	// v.SetDefault("DB_HOST", "127.0.0.1")
+	// v.SetDefault("DB_PORT", "3306")
+	// v.SetDefault("RATELIMITER_MAX_ATTEMPTS", 5)
+	// v.SetDefault("RATELIMITER_BANDURATION", "15m")
+	// v.SetDefault("BCRYPT_COST", 12)
 
 	// Read the file
 	if err := v.ReadInConfig(); err != nil {
