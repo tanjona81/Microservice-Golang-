@@ -248,6 +248,7 @@ func LoadConfig() *Config {
 
 	// Set Defaults (Architect's Fail-safe)
 	v.SetDefault("APP_ENV", "development")
+	v.SetDefault("REDIS_ADDR", "development")
 	v.SetDefault("LOG_LEVEL", "info")
 	v.SetDefault("DB_HOST", "127.0.0.1")
 	v.SetDefault("DB_PORT", "3306")
