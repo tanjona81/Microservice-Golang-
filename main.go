@@ -41,6 +41,7 @@ func main() {
 
 	slog.Debug("Logger initialized", "env_value", appConfg.AppEnv)
 	slog.Debug("Database name check", "env_value DB_NAME", appConfg.Database.Name)
+	slog.Debug("DIRECT OS CHECK", "val", os.Getenv("GRPC_ADDR"))
 	slog.Debug("JUST HERE")
 
 	// Seting up utilities
@@ -145,7 +146,7 @@ func main() {
 	authService := services.NewAuthService(dbConn, dbBreaker, authRepo, userRepo, tokenRepo, tokenService, appConfg, redisdb)
 
 	// Handlers
-	userHdl := handlers.NewUserHandler(userService)
+	userHdl := handlers.NewUserHandler(appConfg, userService)
 	authHdl := handlers.NewAuthHandler(appConfg, authService, tokenService)
 
 	// Create the router
@@ -199,13 +200,18 @@ func main() {
 		r.Get("/offset", userHdl.GetUsersOffsetHandler)
 		r.Post("/", userHdl.CreateUserHandler)
 
+		r.Route("/grpc/{id}", func(r chi.Router) {
+			r.Use(middleware.UserIDCtx)
+			r.Get("/", userHdl.GetUserFromGRPC) // A gRPC call
+		})
+
 		// ID REQUIRED
-		r.Route("/", func(r chi.Router) {
+		r.Route("/{id}", func(r chi.Router) {
 			// Runs for everything in this block
 			r.Use(middleware.Auth)
+			r.Use(middleware.UserIDCtx)
 
-			r.Route("/{id}", func(r chi.Router) {
-				r.Use(middleware.UserIDCtx)
+			r.Group(func(r chi.Router) {
 				r.Use(middleware.EnsureRole("user"))         // Users see themselves
 				r.Get("/", userHdl.GetUsersByIDHandler)      // GET /users/10
 				r.Put("/", userHdl.PutUpdateUserHandler)     // PUT /users/10

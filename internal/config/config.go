@@ -32,6 +32,7 @@ type Config struct {
 	AppEnv        Env                  `mapstructure:"APP_ENV"`
 	LogLevel      string               `mapstructure:"LOG_LEVEL"`
 	JwtSecretKey  string               `mapstructure:"JWT_SECRET_KEY"`
+	GrpcAddr      string               `mapstructure:"GRPC_ADDR"`
 	Database      DatabaseConfig       `mapstructure:",squash"` // squash flattens the fields
 	Redis         RedisConfig          `mapstructure:",squash"`
 	Security      SecurityConfig       `mapstructure:",squash"`
@@ -187,6 +188,7 @@ func bindConfig(v *viper.Viper) {
 	requiredKeys := map[string]string{
 		"APP_ENV":                    "AppEnv",
 		"LOG_LEVEL":                  "LogLevel",
+		"GRPC_ADDR":                  "GrpcAddr",
 		"DB_USER":                    "Database.User",
 		"DB_PASSWORD":                "Database.Password",
 		"DB_HOST":                    "Database.Host",
@@ -214,8 +216,8 @@ func bindConfig(v *viper.Viper) {
 		"SHADOWLIMITER_WINDOW":       "ShadowLimiter.Window",
 	}
 
-	for envVar, viperKey := range requiredKeys {
-		v.BindEnv(envVar, viperKey)
+	for envVar, _ := range requiredKeys {
+		v.SetDefault(envVar, "")
 	}
 }
 
@@ -238,13 +240,14 @@ func LoadConfig() *Config {
 	// v.BindEnv("REDIS_ADDR")
 
 	// Set Defaults (Architect's Fail-safe)
-	v.SetDefault("APP_ENV", "development")
-	v.SetDefault("LOG_LEVEL", "info")
-	v.SetDefault("DB_HOST", "127.0.0.1")
-	v.SetDefault("DB_PORT", "3306")
-	v.SetDefault("RATELIMITER_MAX_ATTEMPTS", 5)
-	v.SetDefault("RATELIMITER_BANDURATION", "15m")
-	v.SetDefault("BCRYPT_COST", 12)
+	// v.SetDefault("APP_ENV", "development")
+	// v.SetDefault("REDIS_ADDR", "development")
+	// v.SetDefault("LOG_LEVEL", "info")
+	// v.SetDefault("DB_HOST", "127.0.0.1")
+	// v.SetDefault("DB_PORT", "3306")
+	// v.SetDefault("RATELIMITER_MAX_ATTEMPTS", 5)
+	// v.SetDefault("RATELIMITER_BANDURATION", "15m")
+	// v.SetDefault("BCRYPT_COST", 12)
 
 	// Read the file
 	if err := v.ReadInConfig(); err != nil {

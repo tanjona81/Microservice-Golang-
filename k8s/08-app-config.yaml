@@ -10,6 +10,9 @@ data:
   LOG_LEVEL: "debug"
 
   # Redis Configuration
+  GRPC_ADDR: "grpc-user-service.go-grpc:50051"
+
+  # Redis Configuration
   REDIS_ADDR: "redis-internal:6379"
 
   # Database Configuration

@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"example/hello/internal/client"
+	"example/hello/internal/config"
 	"example/hello/internal/contextkeys"
 	"example/hello/internal/dto"
 	"example/hello/internal/services"
@@ -9,16 +11,21 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
+
+	userv1 "github.com/tanjona81/gRPC-Golang-/gen/go"
 )
 
 type UserHandler struct {
-	service services.UserService
+	service   services.UserService
+	appConfig *config.Config
 }
 
-func NewUserHandler(s services.UserService) *UserHandler {
+func NewUserHandler(cfg *config.Config, s services.UserService) *UserHandler {
 	return &UserHandler{
-		service: s,
+		appConfig: cfg,
+		service:   s,
 	}
 }
 
@@ -189,4 +196,40 @@ func (handle *UserHandler) DeleteUserHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	utils.SendSuccess(w, http.StatusNoContent, nil)
+}
+
+// Get all users
+func (handle *UserHandler) GetUserFromGRPC(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	// Getting the ID from the context
+	id := ctx.Value(contextkeys.UserIDKey).(int)
+
+	// Setup the "Phone"
+	// userClient, conn, err := client.NewUserClient("grpc-user-service.go-grpc:50051")
+	slog.Debug("Check for grpc env variable", "Value", handle.appConfig.GrpcAddr)
+	slog.Debug("Check for mysql env variable", "Value", handle.appConfig.Database.DSN)
+	slog.Debug("Check for redis env variable", "Value", handle.appConfig.Redis.RedisAddr)
+	slog.Debug("Check for level env variable", "Value", handle.appConfig.AppEnv)
+	slog.Debug("DIRECT OS CHECK", "val", os.Getenv("GRPC_ADDR"))
+	userClient, conn, err := client.NewUserClient(handle.appConfig.GrpcAddr)
+	defer conn.Close()
+
+	// Error handling
+	if err != nil {
+		utils.HandleError(w, r, err)
+		return
+	}
+
+	// The Call: Map the 'id' to the gRPC request
+	resp, err := userClient.GetUser(ctx, &userv1.GetUserRequest{
+		UserId: strconv.Itoa(id),
+	})
+
+	// 4. Handle gRPC Errors (Timeout, Not Found, etc.)
+	if err != nil {
+		utils.HandleError(w, r, err)
+		return
+	}
+	utils.SendSuccess(w, http.StatusOK, resp)
 }
